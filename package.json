@@ -9,9 +9,5 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.0"
-  },
-  "dependencies": {
-    "mongodb": "^7.3.0",
-    "react-scripts": "^0.0.0"
   }
 }
