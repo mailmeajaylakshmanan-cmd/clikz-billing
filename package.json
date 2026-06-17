@@ -2,12 +2,21 @@
   "name": "clikz-billing",
   "version": "1.0.0",
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "cd server && npm run dev",
-    "client": "cd client && npm run dev",
-    "install:all": "npm install && cd client && npm install && cd ../server && npm install"
+    "dev": "vite client",
+    "build": "vite build client",
+    "preview": "vite preview client",
+    "start": "node server/index.js"
   },
-  "devDependencies": {
-    "concurrently": "^8.2.0"
+  "dependencies": {
+    "vite": "^5.2.12",
+    "@vitejs/plugin-react": "^4.3.0",
+    "express": "^4.19.2",
+    "mongoose": "^8.4.0",
+    "axios": "^1.7.2",
+    "mongodb": "^6.7.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2"
   }
 }
