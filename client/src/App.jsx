@@ -13,6 +13,7 @@ import EventMaster from './pages/EventMaster.jsx';
 import Dispatcher from './pages/Dispatcher.jsx';
 import Ledger from './pages/Ledger.jsx';
 import WorkerView from './pages/WorkerView.jsx';
+import MasterFoundation from './pages/MasterFoundation.jsx';
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="dispatcher" element={<Dispatcher />} />
         <Route path="ledger" element={<Ledger />} />
         <Route path="worker-view" element={<WorkerView />} />
+        <Route path="foundation" element={<MasterFoundation />} />
       </Route>
     </Routes>
   );
