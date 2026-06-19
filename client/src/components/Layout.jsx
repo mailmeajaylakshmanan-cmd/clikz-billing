@@ -11,6 +11,7 @@ const navItems = [
   { to: '/', label: 'Command Center', icon: LayoutDashboard, end: true },
   { to: '/foundation', label: 'Foundation', icon: Award },
   { to: '/dispatcher', label: 'Dispatcher', icon: UserCheck },
+  { to: '/clients', label: 'Clients', icon: Users },
 ];
 
 export default function Layout() {

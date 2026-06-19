@@ -243,7 +243,7 @@ export default function Dashboard() {
         <div className="bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
             <h2 className="font-semibold text-slate-800 text-sm uppercase tracking-wider">Ledger Feed</h2>
-            <Link to="/ledger" className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors hover:underline">
+            <Link to="/invoices" className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors hover:underline">
               View Ledger →
             </Link>
           </div>
