@@ -8,15 +8,12 @@ import { useState, useEffect } from 'react';
 import clikzLogo from '../assets/clikz_logo.png';
 
 const navItems = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/foundation', label: 'Master Foundation', icon: Award },
+  { to: '/', label: 'Command Center', icon: LayoutDashboard, end: true },
+  { to: '/foundation', label: 'Foundation', icon: Award },
   { to: '/event-master', label: 'Event Master', icon: Film },
-  { to: '/dispatcher', label: 'The Dispatcher', icon: UserCheck },
+  { to: '/dispatcher', label: 'Dispatcher', icon: UserCheck },
   { to: '/ledger', label: 'The Ledger', icon: CreditCard },
-  { to: '/worker-view', label: 'Worker View', icon: Smartphone },
-  { to: '/invoices', label: 'Invoices', icon: FileText },
-  { to: '/clients', label: 'Clients', icon: Users },
-  { to: '/manage', label: 'Manage', icon: Settings },
+  { to: '/worker-view', label: 'Worker Portal', icon: Smartphone },
 ];
 
 export default function Layout() {

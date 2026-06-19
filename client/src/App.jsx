@@ -7,7 +7,6 @@ import InvoiceList from './pages/InvoiceList.jsx';
 import NewInvoice from './pages/NewInvoice.jsx';
 import EditInvoice from './pages/EditInvoice.jsx';
 import InvoiceView from './pages/InvoiceView.jsx';
-import Manage from './pages/Manage.jsx';
 import ClientsList from './pages/ClientsList.jsx';
 import EventMaster from './pages/EventMaster.jsx';
 import Dispatcher from './pages/Dispatcher.jsx';
@@ -32,7 +31,6 @@ export default function App() {
         <Route path="invoices/:id/edit" element={<EditInvoice />} />
         <Route path="invoices/:id" element={<InvoiceView />} />
         <Route path="clients" element={<ClientsList />} />
-        <Route path="manage" element={<Manage />} />
         <Route path="event-master" element={<EventMaster />} />
         <Route path="dispatcher" element={<Dispatcher />} />
         <Route path="ledger" element={<Ledger />} />
