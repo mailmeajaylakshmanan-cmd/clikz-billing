@@ -5,7 +5,8 @@
     "dev": "vite client",
     "build": "vite build client",
     "preview": "vite preview client",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "postinstall": "npm install --prefix client"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.0",

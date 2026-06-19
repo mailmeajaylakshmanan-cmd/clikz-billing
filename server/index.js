@@ -21,7 +21,12 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok', app: 'CLIKZ Billin
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('MongoDB connected');
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
   .catch(err => console.error('MongoDB error:', err));
+
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+module.exports = app;

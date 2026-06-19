@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios.js';
+import api, { setBackendURL } from '../api/axios.js';
 import toast from 'react-hot-toast';
 import {
-  Mail, Lock, Eye, EyeOff, ArrowRight, Loader2, Info
+  Mail, Lock, Eye, EyeOff, ArrowRight, Loader2, Info, Server, Globe
 } from 'lucide-react';
 import clikzLogo from '../assets/clikz_logo.png';
 
@@ -13,6 +13,21 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPw, setShowPw] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
+  
+  const [serverUrl, setServerUrl] = useState(() => {
+    const saved = localStorage.getItem('backend_url');
+    if (saved) return saved;
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return 'http://localhost:5000/api';
+    }
+    return '/api';
+  });
+
+  const handleServerChange = (url) => {
+    setServerUrl(url);
+    setBackendURL(url);
+    toast.success(`Switched backend to: ${url === '/api' ? 'Online Server' : 'Local Dev Server'}`);
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -66,6 +81,35 @@ export default function Login() {
             <p style={styles.welcomeTag}>Welcome back</p>
             <h1 style={styles.h1}>Sign in to your account</h1>
             <p style={styles.subtitle}>Access your billing &amp; invoice dashboard</p>
+          </div>
+
+          {/* Server Selector */}
+          <div style={styles.serverSelectorContainer}>
+            <p style={styles.serverSelectorLabel}>Server Mode</p>
+            <div style={styles.serverTabs}>
+              <button
+                type="button"
+                onClick={() => handleServerChange('http://localhost:5000/api')}
+                style={{
+                  ...styles.serverTab,
+                  ...(serverUrl === 'http://localhost:5000/api' ? styles.serverTabActive : {}),
+                }}
+              >
+                <Server size={13} style={{ marginRight: 6 }} />
+                <span>Local Dev</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleServerChange('/api')}
+                style={{
+                  ...styles.serverTab,
+                  ...(serverUrl === '/api' ? styles.serverTabActive : {}),
+                }}
+              >
+                <Globe size={13} style={{ marginRight: 6 }} />
+                <span>Online Server</span>
+              </button>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} style={styles.form}>
@@ -319,6 +363,48 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'center',
     background: '#ffffff',
+  },
+  serverSelectorContainer: {
+    marginBottom: '1.5rem',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+  },
+  serverSelectorLabel: {
+    fontSize: 11,
+    fontWeight: 700,
+    color: '#64748b',
+    margin: 0,
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+  },
+  serverTabs: {
+    display: 'flex',
+    background: '#f8fafc',
+    borderRadius: 10,
+    padding: 3,
+    border: '1.5px solid #e2e8f0',
+  },
+  serverTab: {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '8px 12px',
+    fontSize: 13,
+    fontWeight: 500,
+    color: '#64748b',
+    background: 'transparent',
+    border: 'none',
+    borderRadius: 8,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+  },
+  serverTabActive: {
+    background: '#ffffff',
+    color: '#0d9488',
+    fontWeight: 600,
+    boxShadow: '0 2px 8px rgba(15, 23, 42, 0.05)',
   },
   loginHead: {
     marginBottom: '2rem',
