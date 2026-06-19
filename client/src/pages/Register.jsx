@@ -198,26 +198,6 @@ export default function Register() {
             </button>
           </form>
 
-          {/* Divider */}
-          <div style={styles.divider}>
-            <div style={styles.dividerLine} />
-            <span style={styles.dividerLabel}>System Utilities</span>
-            <div style={styles.dividerLine} />
-          </div>
-
-          {/* Seed Demo Button */}
-          <button
-            type="button"
-            onClick={handleSeedDemo}
-            disabled={seeding}
-            style={styles.seedBtn}
-          >
-            {seeding ? (
-              <><Loader2 size={15} style={styles.spin} /> Seeding Database…</>
-            ) : (
-              <><Database size={15} /> <span>Seed Professional Demo Data</span></>
-            )}
-          </button>
         </div>
 
       </div>

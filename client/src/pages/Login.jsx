@@ -212,27 +212,6 @@ export default function Login() {
             </span>
           </div>
 
-          {/* Divider */}
-          <div style={styles.divider}>
-            <div style={styles.dividerLine} />
-            <span style={styles.dividerLabel}>Default credentials</span>
-            <div style={styles.dividerLine} />
-          </div>
-
-          {/* Default creds hint */}
-          <div style={styles.credBox}>
-            <Info size={15} color="#0d9488" style={{ flexShrink: 0, marginTop: 2 }} />
-            <div>
-              <p style={styles.credTitle}>Demo Account</p>
-              <p style={styles.credText}>
-                <span style={styles.credLabel}>Email:</span>{' '}
-                <code style={styles.code}>admin@clikzweddingfilms.com</code>
-                <br />
-                <span style={styles.credLabel}>Password:</span>{' '}
-                <code style={styles.code}>clikz@123</code>
-              </p>
-            </div>
-          </div>
         </div>
 
       </div>
