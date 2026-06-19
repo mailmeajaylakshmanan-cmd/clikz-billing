@@ -1,46 +1,55 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api, { setBackendURL } from '../api/axios.js';
+import api from '../api/axios.js';
 import toast from 'react-hot-toast';
 import {
-  Mail, Lock, Eye, EyeOff, ArrowRight, Loader2, Info, Server, Globe
+  Mail, Lock, Eye, EyeOff, ArrowRight, Loader2, Database, ShieldAlert, ArrowLeft
 } from 'lucide-react';
 import clikzLogo from '../assets/clikz_logo.png';
 
-export default function Login() {
+export default function Register() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ email: '', password: '', confirmPassword: '' });
   const [loading, setLoading] = useState(false);
+  const [seeding, setSeeding] = useState(false);
   const [showPw, setShowPw] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
-  
-  const [serverUrl, setServerUrl] = useState(() => {
-    const saved = localStorage.getItem('backend_url');
-    if (saved) return saved;
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'http://localhost:5000/api';
-    }
-    return '/api';
-  });
-
-  const handleServerChange = (url) => {
-    setServerUrl(url);
-    setBackendURL(url);
-    toast.success(`Switched backend to: ${url === '/api' ? 'Online Server' : 'Local Dev Server'}`);
-  };
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (form.password !== form.confirmPassword) {
+      return toast.error('Passwords do not match');
+    }
+
     setLoading(true);
     try {
-      const res = await api.post('/auth/login', form);
-      localStorage.setItem('token', res.data.token);
-      toast.success('Welcome back!');
-      navigate('/');
-    } catch {
-      toast.error('Invalid credentials');
+      await api.post('/auth/register', {
+        email: form.email,
+        password: form.password
+      });
+      toast.success('Admin account created! You can now log in.');
+      navigate('/login');
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Failed to create account';
+      toast.error(msg);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleSeedDemo() {
+    if (!window.confirm('Are you sure you want to seed professional demo data? This will clear all existing invoices, clients, and services.')) {
+      return;
+    }
+
+    setSeeding(true);
+    try {
+      const res = await api.post('/auth/seed-demo');
+      toast.success(res.data?.message || 'Demo data seeded successfully!');
+    } catch (err) {
+      toast.error('Failed to seed demo data');
+    } finally {
+      setSeeding(false);
     }
   }
 
@@ -69,47 +78,20 @@ export default function Login() {
           <div style={styles.quote}>
             <div style={styles.quoteLine} />
             <p style={styles.quoteText}>
-              "Every love story is beautiful,<br />but yours should be unforgettable."
+              "Create administrative credentials to secure your studio's billing dashboard and manage client portfolios."
             </p>
-            <p style={styles.quoteAttr}>— CLIKZ Studios</p>
+            <p style={styles.quoteAttr}>— System Administration</p>
           </div>
         </div>
 
         {/* ── Right panel ── */}
         <div style={styles.right}>
           <div style={styles.loginHead}>
-            <p style={styles.welcomeTag}>Welcome back</p>
-            <h1 style={styles.h1}>Sign in to your account</h1>
-            <p style={styles.subtitle}>Access your billing &amp; invoice dashboard</p>
-          </div>
-
-          {/* Server Selector */}
-          <div style={styles.serverSelectorContainer}>
-            <p style={styles.serverSelectorLabel}>Server Mode</p>
-            <div style={styles.serverTabs}>
-              <button
-                type="button"
-                onClick={() => handleServerChange('http://localhost:5000/api')}
-                style={{
-                  ...styles.serverTab,
-                  ...(serverUrl === 'http://localhost:5000/api' ? styles.serverTabActive : {}),
-                }}
-              >
-                <Server size={13} style={{ marginRight: 6 }} />
-                <span>Local Dev</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleServerChange('/api')}
-                style={{
-                  ...styles.serverTab,
-                  ...(serverUrl === '/api' ? styles.serverTabActive : {}),
-                }}
-              >
-                <Globe size={13} style={{ marginRight: 6 }} />
-                <span>Online Server</span>
-              </button>
-            </div>
+            <button onClick={() => navigate('/login')} style={styles.backBtn}>
+              <ArrowLeft size={14} /> Back to Sign In
+            </button>
+            <h1 style={styles.h1}>Create Admin Account</h1>
+            <p style={styles.subtitle}>Setup secure logins for your billing dashboard</p>
           </div>
 
           <form onSubmit={handleSubmit} style={styles.form}>
@@ -117,7 +99,7 @@ export default function Login() {
             <div style={styles.fieldGroup}>
               <label style={styles.label} htmlFor="email">
                 <Mail size={13} style={styles.labelIcon} />
-                Email address
+                Admin Email Address
               </label>
               <div style={{
                 ...styles.inputWrap,
@@ -131,7 +113,7 @@ export default function Login() {
                   onChange={e => setForm({ ...form, email: e.target.value })}
                   onFocus={() => setFocusedField('email')}
                   onBlur={() => setFocusedField(null)}
-                  placeholder="admin@clikzweddingfilms.com"
+                  placeholder="name@clikzweddingfilms.com"
                   required
                   style={styles.input}
                   autoComplete="email"
@@ -141,13 +123,10 @@ export default function Login() {
 
             {/* Password */}
             <div style={styles.fieldGroup}>
-              <div style={styles.labelRow}>
-                <label style={styles.label} htmlFor="password">
-                  <Lock size={13} style={styles.labelIcon} />
-                  Password
-                </label>
-                <a href="#" style={styles.forgotLink}>Forgot password?</a>
-              </div>
+              <label style={styles.label} htmlFor="password">
+                <Lock size={13} style={styles.labelIcon} />
+                Password
+              </label>
               <div style={{
                 ...styles.inputWrap,
                 borderColor: focusedField === 'password' ? '#0d9488' : '#e2e8f0',
@@ -160,10 +139,10 @@ export default function Login() {
                   onChange={e => setForm({ ...form, password: e.target.value })}
                   onFocus={() => setFocusedField('password')}
                   onBlur={() => setFocusedField(null)}
-                  placeholder="Enter your password"
+                  placeholder="Create a strong password"
                   required
                   style={{ ...styles.input, paddingRight: 44 }}
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
@@ -176,12 +155,30 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Remember me */}
-            <div style={styles.rememberRow}>
-              <label style={styles.checkboxLabel}>
-                <input type="checkbox" style={styles.checkbox} />
-                <span style={styles.checkText}>Keep me signed in</span>
+            {/* Confirm Password */}
+            <div style={styles.fieldGroup}>
+              <label style={styles.label} htmlFor="confirmPassword">
+                <Lock size={13} style={styles.labelIcon} />
+                Confirm Password
               </label>
+              <div style={{
+                ...styles.inputWrap,
+                borderColor: focusedField === 'confirmPassword' ? '#0d9488' : '#e2e8f0',
+                boxShadow: focusedField === 'confirmPassword' ? '0 0 0 3px rgba(13,148,136,0.08)' : 'none',
+              }}>
+                <input
+                  id="confirmPassword"
+                  type={showPw ? 'text' : 'password'}
+                  value={form.confirmPassword}
+                  onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
+                  onFocus={() => setFocusedField('confirmPassword')}
+                  onBlur={() => setFocusedField(null)}
+                  placeholder="Repeat your password"
+                  required
+                  style={styles.input}
+                  autoComplete="new-password"
+                />
+              </div>
             </div>
 
             {/* Submit */}
@@ -195,44 +192,32 @@ export default function Login() {
               }}
             >
               {loading
-                ? <><Loader2 size={16} style={styles.spin} /> Signing in…</>
-                : <><span>Sign in</span><ArrowRight size={16} /></>
+                ? <><Loader2 size={16} style={styles.spin} /> Registering…</>
+                : <><span>Register Admin Account</span><ArrowRight size={16} /></>
               }
             </button>
           </form>
 
-          {/* Signup Prompt */}
-          <div style={styles.signupPrompt}>
-            Don't have an admin account?{' '}
-            <span
-              onClick={() => navigate('/register')}
-              style={styles.signupLink}
-            >
-              Create Admin Account
-            </span>
-          </div>
-
           {/* Divider */}
           <div style={styles.divider}>
             <div style={styles.dividerLine} />
-            <span style={styles.dividerLabel}>Default credentials</span>
+            <span style={styles.dividerLabel}>System Utilities</span>
             <div style={styles.dividerLine} />
           </div>
 
-          {/* Default creds hint */}
-          <div style={styles.credBox}>
-            <Info size={15} color="#0d9488" style={{ flexShrink: 0, marginTop: 2 }} />
-            <div>
-              <p style={styles.credTitle}>Demo Account</p>
-              <p style={styles.credText}>
-                <span style={styles.credLabel}>Email:</span>{' '}
-                <code style={styles.code}>admin@clikzweddingfilms.com</code>
-                <br />
-                <span style={styles.credLabel}>Password:</span>{' '}
-                <code style={styles.code}>clikz@123</code>
-              </p>
-            </div>
-          </div>
+          {/* Seed Demo Button */}
+          <button
+            type="button"
+            onClick={handleSeedDemo}
+            disabled={seeding}
+            style={styles.seedBtn}
+          >
+            {seeding ? (
+              <><Loader2 size={15} style={styles.spin} /> Seeding Database…</>
+            ) : (
+              <><Database size={15} /> <span>Seed Professional Demo Data</span></>
+            )}
+          </button>
         </div>
 
       </div>
@@ -261,8 +246,6 @@ const styles = {
     boxShadow: '0 25px 60px rgba(15, 23, 42, 0.12), 0 8px 20px rgba(15, 23, 42, 0.06)',
     background: '#ffffff',
   },
-
-  /* Left panel */
   left: {
     width: '44%',
     background: 'linear-gradient(160deg, #0f172a 0%, #1e293b 60%, #0d9488 180%)',
@@ -365,99 +348,59 @@ const styles = {
     margin: '14px 0 0',
     fontWeight: 500,
   },
-
-  /* Right panel */
   right: {
     flex: 1,
-    padding: '3rem 3.2rem',
+    padding: '2.5rem 3.2rem',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     background: '#ffffff',
   },
-  serverSelectorContainer: {
-    marginBottom: '1.5rem',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 8,
-  },
-  serverSelectorLabel: {
-    fontSize: 11,
-    fontWeight: 700,
-    color: '#64748b',
-    margin: 0,
-    textTransform: 'uppercase',
-    letterSpacing: '0.08em',
-  },
-  serverTabs: {
-    display: 'flex',
-    background: '#f8fafc',
-    borderRadius: 10,
-    padding: 3,
-    border: '1.5px solid #e2e8f0',
-  },
-  serverTab: {
-    flex: 1,
-    display: 'flex',
+  backBtn: {
+    display: 'inline-flex',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: '8px 12px',
-    fontSize: 13,
-    fontWeight: 500,
+    gap: 6,
+    fontSize: 12.5,
     color: '#64748b',
-    background: 'transparent',
+    background: 'none',
     border: 'none',
-    borderRadius: 8,
     cursor: 'pointer',
-    transition: 'all 0.2s ease',
-  },
-  serverTabActive: {
-    background: '#ffffff',
-    color: '#0d9488',
-    fontWeight: 600,
-    boxShadow: '0 2px 8px rgba(15, 23, 42, 0.05)',
+    padding: 0,
+    fontWeight: 500,
+    marginBottom: 12,
+    transition: 'color 0.15s ease',
   },
   loginHead: {
-    marginBottom: '2rem',
-  },
-  welcomeTag: {
-    fontSize: 12,
-    fontWeight: 600,
-    color: '#0d9488',
-    textTransform: 'uppercase',
-    letterSpacing: '0.12em',
-    margin: '0 0 8px',
+    marginBottom: '1.2rem',
   },
   h1: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: 700,
     color: '#0f172a',
-    margin: '0 0 8px',
+    margin: '0 0 6px',
     letterSpacing: '-0.02em',
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 13.5,
     color: '#64748b',
     margin: 0,
     fontWeight: 400,
   },
-
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '1.1rem',
+    gap: '0.9rem',
   },
-
   fieldGroup: {
     display: 'flex',
     flexDirection: 'column',
-    gap: 6,
+    gap: 5,
   },
   label: {
     display: 'flex',
     alignItems: 'center',
     gap: 6,
-    fontSize: 13,
+    fontSize: 12.5,
     fontWeight: 600,
     color: '#334155',
     margin: 0,
@@ -465,11 +408,6 @@ const styles = {
   },
   labelIcon: {
     color: '#94a3b8',
-  },
-  labelRow: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
   inputWrap: {
     position: 'relative',
@@ -481,8 +419,8 @@ const styles = {
   },
   input: {
     width: '100%',
-    padding: '12px 14px',
-    fontSize: 14,
+    padding: '11px 14px',
+    fontSize: 13.5,
     background: 'transparent',
     border: 'none',
     color: '#0f172a',
@@ -503,70 +441,33 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     borderRadius: 6,
-    transition: 'background 0.15s ease',
   },
-
-  rememberRow: {
-    display: 'flex',
-    alignItems: 'center',
-    marginTop: -4,
-  },
-  checkboxLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    cursor: 'pointer',
-  },
-  checkbox: {
-    width: 16,
-    height: 16,
-    borderRadius: 4,
-    border: '1.5px solid #cbd5e1',
-    accentColor: '#0d9488',
-    cursor: 'pointer',
-  },
-  checkText: {
-    fontSize: 13,
-    color: '#64748b',
-    fontWeight: 500,
-  },
-
-  forgotLink: {
-    fontSize: 12,
-    color: '#0d9488',
-    textDecoration: 'none',
-    fontWeight: 600,
-    transition: 'color 0.15s ease',
-  },
-
   btn: {
     width: '100%',
-    padding: '13px',
+    padding: '12px',
     background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)',
     color: '#fff',
     border: 'none',
     borderRadius: 10,
-    fontSize: 14,
+    fontSize: 13.5,
     fontWeight: 600,
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    letterSpacing: '0.01em',
-    marginTop: 4,
+    marginTop: 6,
     boxShadow: '0 4px 16px rgba(13, 148, 136, 0.25)',
     transition: 'all 0.2s ease',
   },
   spin: {
     animation: 'spin 0.8s linear infinite',
   },
-
   divider: {
     display: 'flex',
     alignItems: 'center',
     gap: 14,
-    margin: '1.6rem 0 1rem',
+    margin: '1.2rem 0 0.8rem',
   },
   dividerLine: {
     flex: 1,
@@ -574,60 +475,27 @@ const styles = {
     background: 'linear-gradient(90deg, transparent, #e2e8f0, transparent)',
   },
   dividerLabel: {
-    fontSize: 10,
+    fontSize: 9.5,
     color: '#94a3b8',
-    letterSpacing: '0.1em',
+    letterSpacing: '0.15em',
     textTransform: 'uppercase',
     fontWeight: 600,
   },
-
-  credBox: {
-    background: 'linear-gradient(135deg, #f0fdfa 0%, #f8fafc 100%)',
-    border: '1px solid #ccfbf1',
-    borderRadius: 12,
-    padding: '14px 16px',
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: 12,
-  },
-  credTitle: {
-    fontSize: 11,
-    fontWeight: 700,
+  seedBtn: {
+    width: '100%',
+    padding: '11px',
+    background: '#ffffff',
     color: '#0d9488',
-    textTransform: 'uppercase',
-    letterSpacing: '0.08em',
-    margin: '0 0 6px',
-  },
-  credText: {
-    fontSize: 12.5,
-    color: '#475569',
-    lineHeight: 1.9,
-    margin: 0,
-  },
-  credLabel: {
-    fontWeight: 600,
-    color: '#334155',
-  },
-  code: {
-    fontFamily: '"SF Mono", "Fira Code", monospace',
-    fontWeight: 600,
-    color: '#0f172a',
-    fontSize: 11.5,
-    background: 'rgba(13,148,136,0.08)',
-    padding: '2px 6px',
-    borderRadius: 4,
-    letterSpacing: '0.02em',
-  },
-  signupPrompt: {
-    textAlign: 'center',
+    border: '1.5px solid #0d9488',
+    borderRadius: 10,
     fontSize: 13,
-    color: '#64748b',
-    marginTop: '1.2rem',
-  },
-  signupLink: {
-    color: '#0d9488',
     fontWeight: 600,
     cursor: 'pointer',
-    textDecoration: 'underline',
-  },
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    transition: 'all 0.2s ease',
+    boxShadow: '0 2px 8px rgba(13, 148, 136, 0.05)',
+  }
 };
