@@ -10,6 +10,7 @@ import clikzLogo from '../assets/clikz_logo.png';
 const navItems = [
   { to: '/', label: 'Command Center', icon: LayoutDashboard, end: true },
   { to: '/foundation', label: 'Foundation', icon: Award },
+  { to: '/dispatcher', label: 'Dispatcher', icon: UserCheck },
 ];
 
 export default function Layout() {

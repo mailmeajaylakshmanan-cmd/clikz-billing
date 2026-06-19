@@ -7,6 +7,14 @@ const serviceLineSchema = new mongoose.Schema({
   total: { type: Number, required: true },
 });
 
+const staffAssignmentSchema = new mongoose.Schema({
+  employeeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee' },
+  name: String,
+  role: String,
+  dayRate: Number,
+  attendance: { type: String, enum: ['Pending', 'Present', 'Absent'], default: 'Pending' }
+});
+
 const invoiceSchema = new mongoose.Schema({
   invoiceNo: { type: String, unique: true },
   
@@ -29,7 +37,7 @@ const invoiceSchema = new mongoose.Schema({
   notes: { type: String, default: 'Grateful to be part of your celebration.' },
   services: [serviceLineSchema],
   
-  // New refined fields
+  // Refined fields
   client: {
     id: { type: mongoose.Schema.Types.ObjectId, ref: 'Client' },
     name: { type: String, required: true },
@@ -41,11 +49,15 @@ const invoiceSchema = new mongoose.Schema({
     location: String,
     status: { type: String, enum: ['Enquiry', 'Confirmed', 'In Progress', 'Completed'], default: 'Enquiry' }
   },
-  staffAssignments: [{
-    employeeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee' },
-    roleAssigned: String,
-    payStatus: { type: String, enum: ['Pending', 'Paid'], default: 'Pending' }
-  }],
+  
+  // Staff Assignments
+  staffAllocated: [staffAssignmentSchema],
+  staffingStatus: { 
+    type: String, 
+    enum: ['Unstaffed', 'Partially Staffed', 'Fully Staffed'], 
+    default: 'Unstaffed' 
+  },
+  
   billing: {
     subTotal: Number,
     discount: { type: Number, default: 0 },
