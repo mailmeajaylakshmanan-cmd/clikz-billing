@@ -1,6 +1,9 @@
 {
   "name": "clikz-billing",
   "version": "1.0.0",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "vite client",
     "build": "vite build client",
